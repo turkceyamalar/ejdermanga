@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 260" role="img" aria-labelledby="t d">
+<title id="t">EjderManga</title><desc id="d">Uzun siyah beyaz ejderha ve EjderManga logosu</desc>
+<defs>
+  <linearGradient id="silver" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#d8d8d8"/><stop offset="1" stop-color="#797979"/></linearGradient>
+  <linearGradient id="orange" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ff9d2e"/><stop offset=".55" stop-color="#f06b12"/><stop offset="1" stop-color="#bc3d00"/></linearGradient>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".55"/></filter>
+  <pattern id="scales" width="22" height="18" patternUnits="userSpaceOnUse"><path d="M1 8 Q6 2 11 8 Q16 2 21 8" fill="none" stroke="#222" stroke-width="2"/><path d="M1 16 Q6 10 11 16 Q16 10 21 16" fill="none" stroke="#555" stroke-width="1.2"/></pattern>
+</defs>
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M45 146 C160 88 250 180 356 119 C470 53 570 174 684 115 C801 55 909 172 1031 112 C1121 68 1210 78 1320 107" stroke="#111" stroke-width="52"/>
+  <path d="M45 146 C160 88 250 180 356 119 C470 53 570 174 684 115 C801 55 909 172 1031 112 C1121 68 1210 78 1320 107" stroke="#f5f5f5" stroke-width="42"/>
+  <path d="M45 146 C160 88 250 180 356 119 C470 53 570 174 684 115 C801 55 909 172 1031 112 C1121 68 1210 78 1320 107" stroke="url(#scales)" stroke-width="28"/>
+  <path d="M38 144 C84 108 121 91 178 82 M53 151 C93 164 121 181 165 198 M192 88 C226 53 250 39 287 31 M205 185 C239 208 278 220 324 221" stroke="#ececec" stroke-width="10"/>
+  <path d="M120 109 Q145 91 169 107 M250 145 Q276 128 302 145 M414 101 Q442 82 470 100 M562 146 Q591 126 619 144 M744 101 Q773 82 803 101 M905 145 Q934 126 964 144" stroke="#222" stroke-width="4"/>
+</g>
+<g transform="translate(1260 36)" filter="url(#shadow)">
+  <path d="M26 88 C55 25 129 3 208 33 C239 45 271 69 299 96 C270 89 249 94 229 107 C260 111 281 126 296 147 C264 134 238 135 212 146 C180 159 149 160 115 150 C82 141 50 123 26 88Z" fill="#f4f4f4" stroke="#111" stroke-width="9"/>
+  <path d="M100 64 C132 27 172 14 222 27 C198 35 182 46 168 63 C196 55 222 58 249 72 C216 73 195 81 179 98 C154 89 128 78 100 64Z" fill="#fff" stroke="#111" stroke-width="7"/>
+  <path d="M195 83 C220 76 247 80 267 96 L250 105 L275 116 L245 122 L267 137 C239 136 214 128 192 112Z" fill="#eee" stroke="#111" stroke-width="7"/>
+  <path d="M229 97 L275 109 L244 121" fill="#111"/>
+  <path d="M171 70 L160 39 L186 56 L197 24 L208 59 L231 38 L218 70" fill="#eee" stroke="#111" stroke-width="7"/>
+  <path d="M230 116 q28 7 43 22 q-25 2-43 14" fill="none" stroke="#111" stroke-width="6"/>
+  <circle cx="229" cy="91" r="7" fill="#f47a14" stroke="#111" stroke-width="3"/>
+  <path d="M278 92 C315 73 338 78 355 98 C333 91 317 95 303 108" fill="none" stroke="#ddd" stroke-width="5"/>
+  <path d="M280 129 C317 143 339 139 357 121 C337 128 320 124 306 115" fill="none" stroke="#ddd" stroke-width="5"/>
+</g>
+<g transform="translate(70 58)">
+  <path d="M0 78 C-15 41 9 12 53 5 C37 20 29 35 31 54 C49 32 70 23 98 23 C76 38 67 53 69 70 C86 55 104 49 125 51 C101 66 83 84 75 106 C47 103 20 94 0 78Z" fill="#f3f3f3" stroke="#111" stroke-width="8"/>
+</g>
+<g filter="url(#shadow)">
+  <text x="620" y="164" text-anchor="end" font-family="Georgia,Times New Roman,serif" font-size="104" font-weight="700" fill="url(#silver)" stroke="#111" stroke-width="7" paint-order="stroke">Ejder</text>
+  <text x="620" y="164" text-anchor="start" font-family="Georgia,Times New Roman,serif" font-size="104" font-weight="700" fill="url(#orange)" stroke="#111" stroke-width="7" paint-order="stroke">Manga</text>
+</g>
+</svg>

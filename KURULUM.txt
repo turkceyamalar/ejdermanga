@@ -1,0 +1,17 @@
+EJDERMANGA — MUSHOKU TENSEI GÜNCELLEMESİ
+
+1. Ana ZIP dosyasını bir klasöre çıkar.
+2. İçindeki index.html, content.js, catalog-reader.css, assets, chapters ve diğer dosyaları ejdermanga deposunun ana dizinine yükle.
+3. chapters klasöründeki bölüm ZIP dosyalarını AÇMA. Okuyucu bunları kendisi açar.
+4. Aynı adlı dosyaları değiştir ve Commit changes ile kaydet.
+5. GitHub Pages yayını tamamlanınca sayfayı Ctrl+F5 ile yenile.
+
+46 bölüm/ara bölüm, 1.160 sayfa. İngilizce görseller hazır.
+Türkçe, Fransızca, İtalyanca, Arapça, İspanyolca ve Japonca seçeneklerinde çeviri yakında gösterilir; çeviriler hazır değildir.
+27. bölüm kaynakta yalnız bilgilendirme görselidir, bölüm listesine hikâye olarak eklenmedi.
+97 diğer seri için kapak, ayrıntı sayfası ve Yakında gelecek durumu bulunur.
+Uçuşan noktalar, kaydırmada takip etmeyen menü, Animeler bölümü korunur.
+Tam ekranda ışığı kıs gizlenir. ESC tam ekrandan çıkar.
+Dosyaları çift tıklayarak yerelden açmak yerine GitHub Pages üzerinden kullan.
+
+Bu paket hazırlanmıştır; canlı siteye otomatik yüklenmemiştir.

@@ -78,7 +78,7 @@ async function showChapterPage(ch,page){
  try{
   let bytes=chapterCache.get(ch);
   if(!bytes){
-   const response=await fetch(`chapters/${ch}.zip`);if(!response.ok)throw Error('Bölüm dosyası bulunamadı');
+   const response=await fetch(`${encodeURIComponent(ch)}.zip`);if(!response.ok)throw Error('Bölüm dosyası bulunamadı');
    bytes=new Uint8Array(await response.arrayBuffer());chapterCache.set(ch,bytes);
    while(chapterCache.size>2)chapterCache.delete(chapterCache.keys().next().value);
   }

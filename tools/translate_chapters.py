@@ -7,7 +7,7 @@ from pytesseract import Output
 import argostranslate.package, argostranslate.translate
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-LANGS = ["tr","fr","it","ar","es","ja"]
+LANGS = [x.strip() for x in os.environ.get("TARGET_LANGS","tr,fr,it,ar,es,ja").split(",") if x.strip()]
 ZIP_RE = re.compile(r"^\d+(?:\.\d+)?\.zip$")
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 FONT_AR = "/usr/share/fonts/truetype/noto/NotoSansArabic-Regular.ttf"

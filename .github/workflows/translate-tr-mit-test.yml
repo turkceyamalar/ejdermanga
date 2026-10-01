@@ -60,7 +60,7 @@ jobs:
           no_hyphenation = true
 
           [translator]
-          translator = "google"
+          translator = "offline"
           target_lang = "TRK"
           no_text_lang_skip = false
 

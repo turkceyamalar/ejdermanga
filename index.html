@@ -87,7 +87,7 @@ const animeCatalog=[
 ];
 function animePoster(item){return `<div class="anime-poster-art anime-${item.slug}"><span>${item.mark}</span><small>ANİME</small></div>`}
 function anime(){
- const parts=location.hash.replace(/^#\\/?/,'').split('/'),slug=parts[0]==='anime'?parts[1]:'';
+ const parts=location.hash.replace(/^#\/?/,'').split('/'),slug=parts[0]==='anime'?parts[1]:'';
  const item=animeCatalog.find(x=>x.slug===slug);
  if(item){
   return `${head('anime')}<main class="wrap"><div class="crumbs"><a href="#/animeler">Animeler</a><span>›</span><span>${escapeText(item.short)}</span></div><section class="detail anime-detail"><div class="detail-cover">${animePoster(item)}</div><div><span class="pill">Anime</span><h1>${escapeText(item.title)}</h1><p class="summary">${escapeText(item.desc)}</p><div class="meta"><span>${escapeText(item.genre)}</span><span>${item.seasons.length} sezon</span><span>${item.episodes.reduce((a,b)=>a+b,0)} bölüm</span></div><div class="detail-actions"><a class="btn secondary" href="#/animeler">← Anime arşivine dön</a></div></div></section><section class="chapter-list anime-episodes"><h2>Sezonlar ve Bölümler</h2><p class="summary">Anime sayfa düzeni hazır. İzleme kaynağı eklenen bölümlerde oynatıcı buradan açılacak.</p>${item.seasons.map((season,si)=>`<div class="season-block"><h3>${escapeText(season)}</h3><div class="episode-grid">${Array.from({length:item.episodes[si]},(_,i)=>`<button class="episode-card" type="button" disabled><b>Bölüm ${i+1}</b><small>Video yakında</small></button>`).join('')}</div></div>`).join('')}</section></main>${footer()}`;

@@ -1,0 +1,116 @@
+name: Türkçe manga kalite testi
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/translate-tr-mit-test.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  test_chapter_1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Repoyu al
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Manga çeviri motorunu kur
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git unzip fonts-dejavu-core
+          python -m pip install --upgrade pip
+          git clone --depth 1 https://github.com/zyddnys/manga-image-translator.git /tmp/manga-image-translator
+          cd /tmp/manga-image-translator
+          pip install -r requirements.txt
+
+      - name: Bölüm 1'i hazırla
+        run: |
+          rm -rf /tmp/ch1 /tmp/ch1-translated
+          mkdir -p /tmp/ch1
+          unzip -q 1.zip -d /tmp/ch1
+
+      - name: Türkçeye çevir ve aynı balonlara yerleştir
+        run: |
+          cat > /tmp/mit-config.toml <<'EOF'
+          kernel_size = 3
+          mask_dilation_offset = 12
+
+          [render]
+          renderer = "default"
+          alignment = "center"
+          disable_font_border = true
+          font_size_offset = 0
+          font_size_minimum = 10
+          direction = "horizontal"
+          uppercase = false
+          lowercase = false
+          gimp_font = "DejaVu Sans"
+          no_hyphenation = true
+
+          [translator]
+          translator = "offline"
+          target_lang = "TRK"
+          no_text_lang_skip = false
+
+          [detector]
+          detector = "ctd"
+          detection_size = 1536
+          text_threshold = 0.5
+          det_rotate = false
+          det_auto_rotate = false
+          det_invert = false
+          det_gamma_correct = false
+          box_threshold = 0.65
+          unclip_ratio = 2.0
+
+          [colorizer]
+          colorization_size = 576
+          denoise_sigma = 30
+          colorizer = "none"
+
+          [inpainter]
+          inpainter = "lama_large"
+          inpainting_size = 1536
+          inpainting_precision = "fp32"
+
+          [ocr]
+          use_mocr_merge = false
+          ocr = "48px"
+          min_text_length = 2
+          ignore_bubble = 0
+          EOF
+
+          cd /tmp/manga-image-translator
+          python -m manga_translator --config-file /tmp/mit-config.toml --font-path /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf local -i /tmp/ch1 -o /tmp/ch1-translated -f webp --overwrite --ignore-errors
+
+      - name: Test ZIP'ini oluştur
+        run: |
+          mkdir -p tr-mit
+          python - <<'PY'
+          import os, zipfile, pathlib, shutil
+          src=pathlib.Path('/tmp/ch1-translated')
+          if not src.exists():
+              raise SystemExit('Translated output folder missing')
+          files=sorted([p for p in src.rglob('*') if p.suffix.lower() in {'.webp','.png','.jpg','.jpeg'}])
+          if not files:
+              raise SystemExit('No translated images generated')
+          with zipfile.ZipFile('tr-mit/1.zip','w',compression=zipfile.ZIP_STORED) as z:
+              for i,p in enumerate(files,1):
+                  z.write(p,f'{i:03d}{p.suffix.lower()}')
+          print('pages',len(files))
+          PY
+
+      - name: Test çıktısını repoya kaydet
+        run: |
+          git config user.name "ejdermanga-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git fetch origin main
+          git reset --hard origin/main
+          git add tr-mit/1.zip
+          git commit -m "Bölüm 1 manga çeviri kalite testi"
+          git push origin HEAD:main

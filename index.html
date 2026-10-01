@@ -424,7 +424,7 @@ function portalHome(){
 function mangaArchivePage(){
  state.filter='manga';
  var featured='<article class="catalog"><div class="cover-box">'+coverMarkup(mushoku())+'</div><div class="catalog-body"><span class="pill">Manga · Yeni eklendi</span><h3>Mushoku Tensei</h3><p>Bölümleri sırayla aç, sayfa çevirerek oku ve kaldığın yerden devam et.</p><div class="meta"><span>'+chapters.length+' bölüm ve ara bölüm</span><span>7 dil desteği</span></div><a class="btn" href="#/seri/mushoku-tensei">Bölümleri aç →</a></div></article>';
- var cards=archiveCatalog.filter(function(x){return x.slug!=='mushoku-tensei'}).map(function(x){return '<a class="portal-section-card" data-name="'+escapeText(x.title.toLocaleLowerCase('tr'))+'" href="#/seri/'+x.slug+'">'+coverMarkup(x)+'<div><strong>'+escapeText(x.title)+'</strong><small>Yakında gelecek</small></div></a>'}).join('');
+ var cards=archiveCatalog.filter(function(x){return x.slug!=='mushoku-tensei'}).map(function(x){return '<a class="archive-card portal-section-card" data-name="'+escapeText(x.title.toLocaleLowerCase('tr'))+'" href="#/seri/'+x.slug+'">'+coverMarkup(x)+'<div><strong>'+escapeText(x.title)+'</strong><small>Yakında gelecek</small></div></a>'}).join('');
  return head('series')+'<main class="wrap portal-section-main"><div class="intro"><div><div class="eyebrow">EjderManga</div><h1>Manga</h1></div><p>Manga serilerini seç ve bölümleri aç.</p></div>'+featured+'<div class="section-head"><h2>Manga arşivi</h2><label>Ara <input id="catalogSearch" type="search" placeholder="Seri adı…"></label></div><div class="portal-section-grid">'+cards+'</div><p id="searchEmpty" hidden>Bu isimde bir seri bulunamadı.</p></main>'+footer();
 }
 function novelArchivePage(){

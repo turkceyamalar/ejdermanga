@@ -127,16 +127,32 @@ linear-gradient(135deg,#321309 0%,#4a1a09 55%,#5f230b 100%)}
 @media(max-width:760px){.anime-hero{height:520px;border-radius:10px}.anime-hero-content{width:82%;left:24px;top:auto;bottom:58px;transform:none}.anime-hero-shade{background:linear-gradient(0deg,rgba(3,4,7,.97) 5%,rgba(3,4,7,.62) 65%,rgba(3,4,7,.12) 100%)}.anime-hero-content p{font-size:.95rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.anime-hero-content h1{font-size:2.5rem}.anime-hero-nav{display:none}}
 
 /* Portal-only homepage: MANGA / NOVEL / ANİME */
-.portal-home{min-height:100svh;display:grid;place-items:center;padding:32px 20px}
-.portal-options{width:min(980px,100%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
-.portal-choice{min-height:240px;display:grid;place-items:center;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,var(--surface),rgba(32,29,26,.72));box-shadow:var(--shadow);font:900 clamp(2rem,4vw,4rem)/1 "Arial Narrow","Trebuchet MS",Arial,sans-serif;letter-spacing:.08em;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
-.portal-choice::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 115%,rgba(242,139,59,.28),transparent 55%);opacity:.7;transition:opacity .2s ease}
-.portal-choice span{position:relative;z-index:1}
-.portal-choice:hover{transform:translateY(-6px);border-color:var(--accent);box-shadow:0 24px 58px #0009}
-.portal-choice:hover::before{opacity:1}
-.portal-choice:focus-visible{outline:3px solid var(--accent2);outline-offset:5px}
-html[data-theme="light"] .portal-choice{background:linear-gradient(145deg,#fff,#f4e7db)}
-@media(max-width:760px){.portal-options{grid-template-columns:1fr;max-width:520px}.portal-choice{min-height:150px;font-size:clamp(2rem,10vw,3.2rem)}}
+.portal-home{min-height:100svh;display:grid;place-items:center;padding:42px 22px}
+.portal-options{width:min(1130px,100%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px}
+.portal-choice{--card-bg:none;min-height:455px;position:relative;overflow:hidden;border:1px solid rgba(255,153,75,.72);border-radius:20px;background:#14110f;box-shadow:0 26px 65px #000a,inset 0 0 0 1px #ffffff08;isolation:isolate;transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease}
+.portal-choice::before{content:"";position:absolute;inset:0;background-image:linear-gradient(180deg,rgba(6,6,7,.06) 0%,rgba(7,6,6,.24) 38%,rgba(8,6,5,.9) 82%,rgba(11,8,6,.98) 100%),var(--card-bg);background-size:cover;background-position:center;filter:saturate(.78) contrast(1.05);transform:scale(1.01);transition:transform .42s ease,filter .35s ease;z-index:-2}
+.portal-choice::after{content:"";position:absolute;inset:auto -18% -28% -18%;height:62%;background:radial-gradient(ellipse at center,rgba(255,122,32,.42) 0%,rgba(230,88,15,.14) 38%,transparent 72%);filter:blur(18px);z-index:-1;opacity:.85;transition:opacity .3s ease,transform .3s ease}
+.portal-choice--manga{--card-bg:url('manga-page.webp')}
+.portal-choice--novel{--card-bg:url('cover-720.webp')}
+.portal-choice--anime{--card-bg:url('https://cdn.myanimelist.net/images/anime/1801/142390l.jpg')}
+.portal-choice-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding:42px 24px 54px}
+.portal-icon{width:94px;height:94px;margin-bottom:20px;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(255,174,103,.68);background:radial-gradient(circle,#4c250f 0%,#24140c 58%,#120d09 100%);box-shadow:0 0 0 8px #f28b3b12,0 0 38px #ff7f2d88,inset 0 0 20px #ff9a4b2b;color:#fff7f1;transition:transform .28s ease,box-shadow .28s ease}
+.portal-icon svg{width:58px;height:58px;stroke:currentColor;filter:drop-shadow(0 0 9px #ff8d3c)}
+.portal-title{display:block;font:900 clamp(2.6rem,4vw,4.2rem)/.98 "Arial Narrow","Trebuchet MS",Arial,sans-serif;letter-spacing:.055em;color:#fff;text-shadow:0 4px 16px #000;margin:0}
+.portal-ornament{display:flex;align-items:center;justify-content:center;gap:10px;width:74%;margin:16px auto 12px;color:#ff9c48}
+.portal-ornament::before,.portal-ornament::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#ff963f)}
+.portal-ornament::after{background:linear-gradient(90deg,#ff963f,transparent)}
+.portal-ornament i{width:8px;height:8px;background:#ff9c48;transform:rotate(45deg);box-shadow:0 0 12px #ff8a31}
+.portal-sub{display:block;color:#ded7d0;font-size:1rem;letter-spacing:.01em;text-shadow:0 2px 8px #000}
+.portal-choice:hover{transform:translateY(-9px) scale(1.012);border-color:#ff9a4b;box-shadow:0 34px 78px #000c,0 0 34px #ff7b272d,inset 0 0 0 1px #ffffff10}
+.portal-choice:hover::before{transform:scale(1.075);filter:saturate(.92) contrast(1.08)}
+.portal-choice:hover::after{opacity:1;transform:translateY(-8px)}
+.portal-choice:hover .portal-icon{transform:translateY(-5px) scale(1.06);box-shadow:0 0 0 9px #f28b3b16,0 0 50px #ff7f2daa,inset 0 0 24px #ff9a4b38}
+.portal-choice:focus-visible{outline:3px solid var(--accent2);outline-offset:6px}
+html[data-theme="light"] .portal-choice{border-color:#c96c2f;box-shadow:0 24px 60px #6b4a2b35}
+html[data-theme="light"] .portal-choice::before{filter:saturate(.72) brightness(1.08)}
+@media(max-width:860px){.portal-options{gap:14px}.portal-choice{min-height:385px}.portal-title{font-size:clamp(2rem,6vw,3rem)}}
+@media(max-width:680px){.portal-home{align-items:start;padding-top:30px}.portal-options{grid-template-columns:1fr;max-width:520px}.portal-choice{min-height:250px}.portal-choice-inner{padding:24px 18px 30px}.portal-icon{width:72px;height:72px;margin-bottom:12px}.portal-icon svg{width:44px;height:44px}.portal-title{font-size:2.5rem}.portal-sub{font-size:.9rem}.portal-choice--manga::before,.portal-choice--novel::before,.portal-choice--anime::before{background-position:center 28%}}
 .portal-section-main{padding-bottom:60px}
 .portal-section-main .intro{margin-bottom:28px}
 .portal-section-main .catalog{margin-bottom:28px}
@@ -415,10 +431,14 @@ function homeAnimeSections(){
 
 /* Minimal category portal introduced 2026-10-01 */
 function portalHome(){
+ const mangaIcon='<svg viewBox="0 0 64 64" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 15c8-3 15-2 23 3v34c-8-5-15-6-23-3V15Z"/><path d="M55 15c-8-3-15-2-23 3v34c8-5 15-6 23-3V15Z"/><path d="M17 24h8M17 31h8M39 24h8M39 31h8"/></svg>';
+ const novelIcon='<svg viewBox="0 0 64 64" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 45c9-4 16-3 25 2V25c-9-5-16-6-25-2v22Z"/><path d="M51 45c-5-2-9-3-13-2"/><path d="M42 9c5 3 8 8 7 13-1 7-8 11-15 16 1-8 3-15 8-21"/><path d="M32 46c3-12 8-22 16-31"/></svg>';
+ const animeIcon='<svg viewBox="0 0 64 64" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="32" cy="32" r="23"/><path d="M27 21l17 11-17 11V21Z"/></svg>';
+ const card=function(cls,href,icon,title,sub){return '<a class="portal-choice portal-choice--'+cls+'" href="'+href+'"><span class="portal-choice-inner"><span class="portal-icon">'+icon+'</span><span class="portal-title">'+title+'</span><span class="portal-ornament"><i></i></span><span class="portal-sub">'+sub+'</span></span></a>'};
  return '<main class="portal-home"><nav class="portal-options" aria-label="İçerik türünü seç">'+
- '<a class="portal-choice" href="#/manga"><span>MANGA</span></a>'+
- '<a class="portal-choice" href="#/novel"><span>NOVEL</span></a>'+
- '<a class="portal-choice" href="#/animeler"><span>ANİME</span></a>'+
+ card('manga','#/manga',mangaIcon,'MANGA','Manga arşivine gir')+
+ card('novel','#/novel',novelIcon,'NOVEL','Hikâyeyi okumaya başla')+
+ card('anime','#/animeler',animeIcon,'ANİME','Anime arşivini keşfet')+
  '</nav></main>';
 }
 function mangaArchivePage(){

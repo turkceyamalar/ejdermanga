@@ -6,6 +6,7 @@ on:
     paths:
       - ".github/workflows/translate-manga.yml"
       - "tools/translate_chapters.py"
+      - "color-source/**.zip"
 
 permissions:
   contents: write

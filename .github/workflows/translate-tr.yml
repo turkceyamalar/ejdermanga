@@ -35,7 +35,7 @@ jobs:
       - name: Python paketleri
         run: |
           python -m pip install --upgrade pip
-          pip install pillow pytesseract argostranslate
+          pip install pillow pytesseract argostranslate opencv-python-headless numpy
 
       - name: Bölümü Türkçeye çevir
         env:
@@ -46,8 +46,8 @@ jobs:
       - name: Bölüm çıktısını sakla
         uses: actions/upload-artifact@v4
         with:
-          name: tr-${{ matrix.chapter }}
-          path: tr/${{ matrix.chapter }}.zip
+          name: tr-clean-${{ matrix.chapter }}
+          path: tr-clean/${{ matrix.chapter }}.zip
           if-no-files-found: error
           retention-days: 1
 
@@ -60,27 +60,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Tüm Türkçe bölüm paketlerini indir
+      - name: Tüm temiz Türkçe bölüm paketlerini indir
         uses: actions/download-artifact@v4
         with:
-          pattern: tr-*
-          path: tr
+          pattern: tr-clean-*
+          path: tr-clean
           merge-multiple: true
 
       - name: 21 Türkçe paketi doğrula
         run: |
-          count=$(find tr -maxdepth 1 -name '*.zip' | wc -l)
+          count=$(find tr-clean -maxdepth 1 -name '*.zip' | wc -l)
           echo "Türkçe paket sayısı: $count"
           test "$count" -eq 21
 
-      - name: Türkçe paketleri siteye kaydet
+      - name: Temiz Türkçe paketleri siteye kaydet
         run: |
           git config user.name "ejdermanga-bot"
           git config user.email "actions@users.noreply.github.com"
           git fetch origin main
           git reset --hard origin/main
-          git add tr
-          git commit -m "Mushoku Tensei 21 Türkçe manga bölümünü yayınla"
+          git add tr-clean
+          git commit -m "Mushoku Tensei 21 temiz Türkçe manga bölümünü yayınla"
           for i in 1 2 3; do
             if git push origin HEAD:main; then
               exit 0

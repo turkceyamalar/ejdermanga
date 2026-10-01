@@ -342,7 +342,21 @@ async function showChapterPage(lang,ch,page){
  try{
   const cacheKey=lang+':'+ch;let bytes=chapterCache.get(cacheKey);
   if(!bytes){
-   let response=null,fallback=false;if(lang==='tr'&&ch==='1'){response=await fetch('tr-mit/1.zip');if(!response.ok)response=await fetch('tr-clean/1.zip');}else{const langPath=lang==='tr'?'tr-clean':lang;response=await fetch(`${encodeURIComponent(langPath)}/${encodeURIComponent(ch)}.zip`);}if(!response.ok){fallback=true;response=await fetch(`${encodeURIComponent(ch)}.zip`)}if(!response.ok)throw Error('Bölüm dosyası bulunamadı');if(fallback){if(status)status.textContent=`${languages[lang]} paketi hazırlanıyor · şu an İngilizce sayfa gösteriliyor`;const lbl=document.getElementById('readerLangLabel');if(lbl)lbl.textContent=`Bölüm ${ch} · İngilizce · ${languages[lang]} hazırlanıyor`;}else{const lbl=document.getElementById('readerLangLabel');if(lbl)lbl.textContent=`Bölüm ${ch} · ${languages[lang]}`;}
+   let response=null;
+   if(lang==='tr'){
+    response=await fetch('tr-mit/'+encodeURIComponent(ch)+'.zip');
+    if(!response.ok){
+     const lbl=document.getElementById('readerLangLabel');
+     if(lbl)lbl.textContent='Bölüm '+ch+' · Türkçe hazırlanıyor';
+     throw Error('Türkçe bölüm henüz hazır değil');
+    }
+   }else{
+    response=await fetch(encodeURIComponent(lang)+'/'+encodeURIComponent(ch)+'.zip');
+    if(!response.ok&&lang==='en')response=await fetch(encodeURIComponent(ch)+'.zip');
+    if(!response.ok)throw Error('Bölüm dosyası bulunamadı');
+   }
+   const lbl=document.getElementById('readerLangLabel');
+   if(lbl)lbl.textContent='Bölüm '+ch+' · '+languages[lang];;
    bytes=new Uint8Array(await response.arrayBuffer());chapterCache.set(cacheKey,bytes);
    while(chapterCache.size>2)chapterCache.delete(chapterCache.keys().next().value);
   }
@@ -357,7 +371,7 @@ async function showChapterPage(lang,ch,page){
   if(!found)throw Error('Sayfa bulunamadı');
   const nextURL=URL.createObjectURL(new Blob([found],{type:'image/webp'}));if(activePageURL)URL.revokeObjectURL(activePageURL);activePageURL=nextURL;
   img.onload=()=>{if(status.isConnected)status.hidden=true};img.onerror=()=>{status.textContent='Görsel yüklenemedi. Sayfayı yenileyebilirsin.'};img.src=nextURL;
- }catch(error){if(sequence===loadSequence&&status.isConnected)status.textContent='Bölüm yüklenemedi. İnternet bağlantını kontrol edip sayfayı yenile.'}
+ }catch(error){if(sequence===loadSequence&&status.isConnected){status.hidden=false;status.textContent=lang==='tr'?'Bu sayfanın Türkçe sürümü hazırlanıyor. İngilizce gösterilmeyecek.':'Bölüm yüklenemedi. İnternet bağlantını kontrol edip sayfayı yenile.';}if(sequence===loadSequence&&img?.isConnected&&lang==='tr')img.removeAttribute('src');}
 }
 
 const languages={tr:'Türkçe',en:'English',fr:'Français',it:'Italiano',ar:'العربية',es:'Español',ja:'日本語'};

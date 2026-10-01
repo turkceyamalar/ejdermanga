@@ -72,14 +72,14 @@ document.addEventListener('fullscreenchange',updateReaderControls);
 function toggleTheme(){let next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('ejdermanga-theme',next)}
 function navigate(p){let type=location.hash.split('/')[2],total=type==='manga'?mangaPages.length:novelPages.length;if(p<1||p>total||state.turning)return;let direction=p>state.page?'next':'prev',sheet=document.querySelector('.book-sheet');if(!sheet||matchMedia('(prefers-reduced-motion: reduce)').matches){location.hash=`#/oku/${type}/${p}`;return}state.turning=true;sheet.classList.add('turn-out-'+direction);setTimeout(()=>{state.incoming=direction;state.turning=false;location.hash=`#/oku/${type}/${p}`},260)}
 const chapterCache=new Map();let activePageURL=null,loadSequence=0;
-async function showChapterPage(ch,page){
+async function showChapterPage(lang,ch,page){
  const sequence=++loadSequence,img=document.getElementById('chapterImage'),status=document.getElementById('chapterStatus');
  if(!img)return;
  try{
-  let bytes=chapterCache.get(ch);
+  const cacheKey=lang+':'+ch;let bytes=chapterCache.get(cacheKey);
   if(!bytes){
-   const response=await fetch(`${encodeURIComponent(ch)}.zip`);if(!response.ok)throw Error('Bölüm dosyası bulunamadı');
-   bytes=new Uint8Array(await response.arrayBuffer());chapterCache.set(ch,bytes);
+   let response=await fetch(`${encodeURIComponent(lang)}/${encodeURIComponent(ch)}.zip`);if(!response.ok)response=await fetch(`${encodeURIComponent(ch)}.zip`);if(!response.ok)throw Error('Bölüm dosyası bulunamadı');
+   bytes=new Uint8Array(await response.arrayBuffer());chapterCache.set(cacheKey,bytes);
    while(chapterCache.size>2)chapterCache.delete(chapterCache.keys().next().value);
   }
   if(sequence!==loadSequence||!img.isConnected)return;
@@ -108,19 +108,19 @@ home=function(active='home'){
  const cards=`<section class="archive-section"><div class="section-head"><h2>Manga arşivi</h2><label>Ara <input id="catalogSearch" type="search" placeholder="Seri adı…"></label></div><p class="summary">Diğer serilerin bölümleri yakında gelecek.</p><div class="archive-grid">${archiveCatalog.filter(x=>x.slug!=='mushoku-tensei').map(x=>`<a class="archive-card" data-name="${escapeText(x.title.toLocaleLowerCase('tr'))}" href="#/seri/${x.slug}">${coverMarkup(x)}<div><strong>${escapeText(x.title)}</strong><small>Yakında gelecek</small></div></a>`).join('')}</div><p id="searchEmpty" hidden>Bu isimde bir seri bulunamadı.</p></section>`;
  return output.replace('<div class="feature-list">',cards+'<div class="feature-list">');
 };
-function languageSelect(lang){return `<label>Dil <select id="mangaLanguage">${Object.entries(languages).map(([code,name])=>`<option value="${code}" ${code===lang?'selected':''}>${name}${code!=='en'?' · Yakında':''}</option>`).join('')}</select></label>`}
-function mangaDetail(slug,lang='en'){
+function languageSelect(lang){return `<label>Dil <select id="mangaLanguage">${Object.entries(languages).map(([code,name])=>`<option value="${code}" ${code===lang?'selected':''}>${name}</option>`).join('')}</select></label>`}
+function mangaDetail(slug,lang='tr'){
  const item=archiveCatalog.find(x=>x.slug===slug);if(!item)return `${head()}<main class="wrap anime-empty"><h1>Seri bulunamadı</h1><a href="#/">Ana sayfa</a></main>`;
- const ready=slug==='mushoku-tensei';let progress={};try{progress=JSON.parse(localStorage.getItem('mushoku-progress-en')||'{}')}catch{}
- const saved=chapters.find(c=>c.id===progress.chapter);const resume=saved?`#/mushoku/en/${saved.id}/${Math.min(saved.count,Math.max(1,progress.page||1))}`:'#/mushoku/en/1/1';
+ const ready=slug==='mushoku-tensei';lang=languages[lang]?lang:'tr';let progress={};try{progress=JSON.parse(localStorage.getItem('mushoku-progress-'+lang)||'{}')}catch{}
+ const saved=chapters.find(c=>c.id===progress.chapter);const resume=saved?`#/mushoku/${lang}/${saved.id}/${Math.min(saved.count,Math.max(1,progress.page||1))}`:`#/mushoku/${lang}/1/1`;
  return `${head('series')}<main class="wrap"><div class="crumbs"><a href="#/">Ana sayfa</a><span>›</span><span>${escapeText(item.title)}</span></div><section class="detail"><div class="detail-cover">${coverMarkup(item)}</div><div><span class="pill">${ready?'Manga · İngilizce bölümler hazır':'Yakında gelecek'}</span><h1>${escapeText(item.title)}</h1>${ready?`<p class="summary">${chapters.length} bölüm ve ara bölüm · ${chapters.reduce((n,c)=>n+c.count,0)} sayfa</p>${languageSelect(lang)}<div class="detail-actions">${lang==='en'?`<a class="btn" href="#/mushoku/en/1/1">İlk bölümden oku</a>${saved?`<a class="btn secondary" href="${resume}">Kaldığın yerden devam et</a>`:''}`:`<p class="summary">${languages[lang]} çevirisi yakında gelecek. Şu anda İngilizce bölümleri okuyabilirsin.</p><a class="btn" href="#/seri/mushoku-tensei/en">İngilizce bölümleri göster</a>`}</div>`:'<p class="summary">Bu serinin bölümleri yakında gelecek.</p><a class="btn secondary" href="#/seriler">Serilere dön</a>'}</div></section>${ready&&lang==='en'?`<section class="chapter-list"><h2>Bölümler</h2><p class="summary">27. bölüm kaynak arşivde bulunmuyor; bu numarada yalnızca bilgilendirme görseli var.</p>${chapters.map(c=>`<a class="chapter-row" href="#/mushoku/en/${c.id}/1"><span><strong>Bölüm ${c.id}</strong><small>${c.count} sayfa · İngilizce</small></span><b>Oku →</b></a>`).join('')}</section>`:''}</main>${footer()}`;
 }
 function mangaReader(lang,ch,p){
- if(lang!=='en')return mangaDetail('mushoku-tensei',languages[lang]?lang:'en');
+ lang=languages[lang]?lang:'tr';
  const chapter=chapters.find(c=>c.id===ch);if(!chapter)return mangaDetail('mushoku-tensei');
- p=Math.max(1,Math.min(chapter.count,parseInt(p)||1));state.page=p;localStorage.setItem('mushoku-progress-en',JSON.stringify({chapter:ch,page:p}));
+ p=Math.max(1,Math.min(chapter.count,parseInt(p)||1));state.page=p;localStorage.setItem('mushoku-progress-'+lang,JSON.stringify({chapter:ch,page:p}));
  const index=chapters.indexOf(chapter),src=`mushoku/en/${ch}/${String(p).padStart(3,'0')}.webp`;
- return `<div class="reader-head"><div class="wrap reader-head-inner"><a class="back" href="#/seri/mushoku-tensei">← Bölümler</a><div class="reader-title"><strong>Mushoku Tensei</strong><small>Bölüm ${ch} · İngilizce</small></div><div class="reader-tools"><select id="chapterSelect" aria-label="Bölüm seç">${chapters.map(c=>`<option value="${c.id}" ${ch===c.id?'selected':''}>Bölüm ${c.id}</option>`).join('')}</select><button id="dimLight">◐ Işığı kıs</button><button id="fullscreen">⛶ Tam ekran</button></div></div><div class="progress"><span style="width:${p/chapter.count*100}%"></span></div></div><main class="reader-page"><div class="book-stage" title="Sol: önceki · Sağ: sonraki"><div class="book-sheet"><div class="manga-image"><p id="chapterStatus" role="status">Bölüm yükleniyor…</p><img id="chapterImage" alt="Mushoku Tensei, bölüm ${ch}, sayfa ${p}" decoding="async"></div></div></div></main><div class="page-controls"><button id="prev" class="btn secondary" ${p===1&&index===0?'disabled':''}>← Önceki</button><span class="page-indicator">${p} / ${chapter.count}<br><small>%${Math.round(p/chapter.count*100)}</small></span><button id="next" class="btn secondary" ${p===chapter.count&&index===chapters.length-1?'disabled':''}>Sonraki →</button></div>`;
+ return `<div class="reader-head"><div class="wrap reader-head-inner"><a class="back" href="#/seri/mushoku-tensei">← Bölümler</a><div class="reader-title"><strong>Mushoku Tensei</strong><small>Bölüm ${ch} · ${languages[lang]}</small></div><div class="reader-tools"><select id="chapterSelect" aria-label="Bölüm seç">${chapters.map(c=>`<option value="${c.id}" ${ch===c.id?'selected':''}>Bölüm ${c.id}</option>`).join('')}</select><button id="dimLight">◐ Işığı kıs</button><button id="fullscreen">⛶ Tam ekran</button></div></div><div class="progress"><span style="width:${p/chapter.count*100}%"></span></div></div><main class="reader-page"><div class="book-stage" title="Sol: önceki · Sağ: sonraki"><div class="book-sheet"><div class="manga-image"><p id="chapterStatus" role="status">Bölüm yükleniyor…</p><img id="chapterImage" alt="Mushoku Tensei, bölüm ${ch}, sayfa ${p}" decoding="async"></div></div></div></main><div class="page-controls"><button id="prev" class="btn secondary" ${p===1&&index===0?'disabled':''}>← Önceki</button><span class="page-indicator">${p} / ${chapter.count}<br><small>%${Math.round(p/chapter.count*100)}</small></span><button id="next" class="btn secondary" ${p===chapter.count&&index===chapters.length-1?'disabled':''}>Sonraki →</button></div>`;
 }
 const originalNavigate=navigate;
 navigate=function(p){
@@ -129,7 +129,7 @@ navigate=function(p){
  let idx=chapters.indexOf(chapter),target=chapter;
  if(p<1){target=chapters[idx-1];if(!target)return;p=target.count}
  if(p>chapter.count){target=chapters[idx+1];if(!target)return;p=1}
- const targetHash=`#/mushoku/en/${target.id}/${p}`;
+ const lang=parts[2],targetHash=`#/mushoku/${lang}/${target.id}/${p}`;
  if(matchMedia('(prefers-reduced-motion: reduce)').matches){location.hash=targetHash;return}
  state.turning=true;document.querySelector('.book-sheet')?.classList.add(p>state.page?'turn-out-next':'turn-out-prev');
  setTimeout(()=>{state.turning=false;location.hash=targetHash},260);
@@ -137,8 +137,8 @@ navigate=function(p){
 function render(){
  const parts=location.hash.replace(/^#\/?/,'').split('/');const [view,slug]=parts;
  if(view==='mushoku'||view==='seri'&&slug!=='kul-ve-yildiz'){
-  const reading=view==='mushoku'&&slug==='en'&&chapters.some(c=>c.id===parts[2]);
-  document.getElementById('app').innerHTML=view==='mushoku'?mangaReader(slug,parts[2],parts[3]):mangaDetail(slug,languages[parts[2]]?parts[2]:'en');
+  const reading=view==='mushoku'&&!!languages[slug]&&chapters.some(c=>c.id===parts[2]);
+  document.getElementById('app').innerHTML=view==='mushoku'?mangaReader(slug,parts[2],parts[3]):mangaDetail(slug,languages[parts[2]]?parts[2]:'tr');
   document.title=(reading?'Oku · Mushoku Tensei':archiveCatalog.find(x=>x.slug===slug)?.title||'Mushoku Tensei')+' · EjderManga';
   document.body.classList.toggle('reader-dim',reading&&state.dim);
   if(!reading){document.body.classList.remove('reader-focus');if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}
@@ -146,10 +146,10 @@ function render(){
   document.getElementById('mangaLanguage')?.addEventListener('change',e=>location.hash='#/seri/mushoku-tensei/'+e.target.value);
   if(reading){
    document.getElementById('prev').onclick=()=>navigate(state.page-1);document.getElementById('next').onclick=()=>navigate(state.page+1);
-   document.getElementById('chapterSelect').onchange=e=>location.hash=`#/mushoku/en/${e.target.value}/1`;
+   document.getElementById('chapterSelect').onchange=e=>location.hash=`#/mushoku/${slug}/${e.target.value}/1`;
    document.getElementById('dimLight').onclick=toggleDim;document.getElementById('fullscreen').onclick=toggleReaderFullscreen;
    document.querySelector('.book-stage').onclick=e=>{if(Date.now()-lastSwipeAt<500)return;const box=e.currentTarget.getBoundingClientRect();navigate(state.page+(e.clientX-box.left<box.width/2?-1:1))};
-   updateReaderControls();showChapterPage(parts[2],state.page);
+   updateReaderControls();showChapterPage(slug,parts[2],state.page);
   }
  }else{
   baseRender();

@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: manga-translate
+  cancel-in-progress: true
+
 jobs:
   translate:
     runs-on: ubuntu-latest

@@ -2,11 +2,6 @@ name: Manga çevirileri üret
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - ".github/workflows/translate-manga.yml"
-      - "tools/translate_chapters.py"
-      - "color-source/**.zip"
 
 permissions:
   contents: write

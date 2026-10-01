@@ -110,7 +110,7 @@ linear-gradient(135deg,#321309 0%,#4a1a09 55%,#5f230b 100%)}
 @media(max-width:760px){.featured-anime-panel{padding:20px 18px}.featured-anime-head h2{font-size:1.45rem}.featured-anime-card{flex-basis:135px}}
 
 .anime-hero{position:relative;width:min(1500px,calc(100vw - 18px));height:clamp(430px,56vw,650px);margin:18px 50% 36px;transform:translateX(-50%);overflow:hidden;border-radius:14px;border:1px solid var(--line);background:#0b0b0b;box-shadow:0 22px 50px #0007}
-.anime-hero-slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .55s ease;background-image:var(--hero-bg);background-size:cover;background-position:center 28%}
+.anime-hero-slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .55s ease;background-image:var(--hero-bg),linear-gradient(135deg,#191919,#080808);background-size:cover;background-position:center 28%;background-repeat:no-repeat}
 .anime-hero-slide.active{opacity:1;pointer-events:auto}
 .anime-hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,5,9,.92) 0%,rgba(4,5,8,.72) 32%,rgba(4,4,5,.25) 62%,rgba(2,2,2,.18) 100%),linear-gradient(0deg,rgba(8,8,9,.95) 0%,transparent 45%)}
 .anime-hero-content{position:absolute;left:clamp(26px,5vw,78px);top:50%;transform:translateY(-46%);width:min(760px,68%);z-index:2}
@@ -333,9 +333,9 @@ home=function(active='home'){
 };
 
 const homeHeroSlides=[
- {slug:'jujutsu-kaisen',title:'Jujutsu Kaisen',tag:'Sezonun İncileri',genre:'Aksiyon · Doğaüstü · Fantastik',desc:'Yuji Itadori ve arkadaşlarının lanetler dünyasındaki mücadelesi yeni sezonda daha da büyüyor.',bg:'https://animecorner.me/wp-content/uploads/2026/01/jujutsu-kaisen-culling-game-part-1-key-visual.jpg'},
- {slug:'solo-leveling',title:'Solo Leveling',tag:'Öne Çıkan Anime',genre:'Aksiyon · Fantastik · Macera',desc:'Sung Jinwoo, dünyanın en zayıf avcısından gölgelerin hükümdarına uzanan yolculuğunu sürdürüyor.',bg:'https://s.yimg.com/ny/api/res/1.2/44UsgPgX_Ztgw6QRHnGcaw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTI0MDA7aD0xNjk4O2NmPXdlYnA-/https%3A/media.zenfs.com/en/teen_vogue_128/ca5a6a24fd81153e56572a4a40a479ee'},
- {slug:'frieren',title:'Frieren: Beyond Journey’s End',tag:'Fantastik Seçki',genre:'Fantastik · Macera · Dram',desc:'Frieren, Fern ve Stark’ın uzun yolculuğu yeni karşılaşmalar ve eski hatıralarla devam ediyor.',bg:'https://storage.mantan-web.jp/images/2026/01/19/20260119dog00m200067000c/003_size10.jpg'}
+ {slug:'jujutsu-kaisen',title:'Jujutsu Kaisen',tag:'Sezonun İncileri',genre:'Aksiyon · Doğaüstü · Fantastik',desc:'Yuji Itadori ve arkadaşlarının lanetler dünyasındaki mücadelesi yeni sezonda daha da büyüyor.',bg:'https://huggingface.co/datasets/deepghs/fancaps_animes/resolve/main/images/40748__jujutsu_kaisen.jpg'},
+ {slug:'solo-leveling',title:'Solo Leveling',tag:'Öne Çıkan Anime',genre:'Aksiyon · Fantastik · Macera',desc:'Sung Jinwoo, dünyanın en zayıf avcısından gölgelerin hükümdarına uzanan yolculuğunu sürdürüyor.',bg:'https://cdn.myanimelist.net/images/anime/1801/142390l.jpg'},
+ {slug:'frieren',title:'Frieren: Beyond Journey’s End',tag:'Fantastik Seçki',genre:'Fantastik · Macera · Dram',desc:'Frieren, Fern ve Stark’ın uzun yolculuğu yeni karşılaşmalar ve eski hatıralarla devam ediyor.',bg:'https://cdn.myanimelist.net/images/anime/1015/138006l.jpg'}
 ];
 function homeHero(){
  var slides=homeHeroSlides.map(function(x,i){

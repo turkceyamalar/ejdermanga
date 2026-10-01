@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - ".github/workflows/translate-tr.yml"
+      - "tools/translate_chapters.py"
 
 permissions:
   contents: write
@@ -14,14 +15,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  translate_tr:
+  translate_chapter:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 7
+      matrix:
+        chapter: ["1","2","3","4","5","5.1","5.5","6","7","8","9","10","10.1","10.2","10.5","11","12","12.5","13","14","15"]
     steps:
       - name: Repoyu al
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Sistem paketleri
         run: |
@@ -33,19 +37,54 @@ jobs:
           python -m pip install --upgrade pip
           pip install pillow pytesseract argostranslate
 
-      - name: Sadece Türkçeyi üret
+      - name: Bölümü Türkçeye çevir
         env:
           TARGET_LANGS: tr
+          TARGET_CHAPTERS: ${{ matrix.chapter }}
         run: python tools/translate_chapters.py
 
-      - name: Türkçe paketleri repoya kaydet
+      - name: Bölüm çıktısını sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: tr-${{ matrix.chapter }}
+          path: tr/${{ matrix.chapter }}.zip
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: translate_chapter
+    runs-on: ubuntu-latest
+    steps:
+      - name: En güncel repoyu al
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Tüm Türkçe bölüm paketlerini indir
+        uses: actions/download-artifact@v4
+        with:
+          pattern: tr-*
+          path: tr
+          merge-multiple: true
+
+      - name: 21 Türkçe paketi doğrula
+        run: |
+          count=$(find tr -maxdepth 1 -name '*.zip' | wc -l)
+          echo "Türkçe paket sayısı: $count"
+          test "$count" -eq 21
+
+      - name: Türkçe paketleri siteye kaydet
         run: |
           git config user.name "ejdermanga-bot"
           git config user.email "actions@users.noreply.github.com"
+          git fetch origin main
+          git reset --hard origin/main
           git add tr
-          if git diff --cached --quiet; then
-            echo "Yeni Türkçe paket yok."
-          else
-            git commit -m "Mushoku Tensei Türkçe manga paketlerini üret"
-            git push
-          fi
+          git commit -m "Mushoku Tensei 21 Türkçe manga bölümünü yayınla"
+          for i in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            git pull --rebase origin main
+          done
+          exit 1

@@ -112,7 +112,9 @@ def paint(img, entries, lang):
 
 def main():
     install_models()
-    sources=sorted([p for p in ROOT.glob("*.zip") if ZIP_RE.match(p.name)], key=lambda p:float(p.stem))
+    originals=sorted([p for p in ROOT.glob("*.zip") if ZIP_RE.match(p.name)], key=lambda p:float(p.stem))
+    color_root=ROOT/"color-source"
+    sources=[(color_root/p.name if (color_root/p.name).exists() else p) for p in originals]
     print(f"Found {len(sources)} source chapter archives")
     for src in sources:
         print("Chapter",src.stem,flush=True)

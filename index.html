@@ -342,7 +342,7 @@ async function showChapterPage(lang,ch,page){
  try{
   const cacheKey=lang+':'+ch;let bytes=chapterCache.get(cacheKey);
   if(!bytes){
-   let response=await fetch(`${encodeURIComponent(lang)}/${encodeURIComponent(ch)}.zip`);let fallback=false;if(!response.ok){fallback=true;response=await fetch(`${encodeURIComponent(ch)}.zip`)}if(!response.ok)throw Error('Bölüm dosyası bulunamadı');if(fallback){if(status)status.textContent=`${languages[lang]} paketi hazırlanıyor · şu an İngilizce sayfa gösteriliyor`;const lbl=document.getElementById('readerLangLabel');if(lbl)lbl.textContent=`Bölüm ${ch} · İngilizce · ${languages[lang]} hazırlanıyor`;}else{const lbl=document.getElementById('readerLangLabel');if(lbl)lbl.textContent=`Bölüm ${ch} · ${languages[lang]}`;}
+   const langPath=lang==='tr'?'tr-clean':lang;let response=await fetch(`${encodeURIComponent(langPath)}/${encodeURIComponent(ch)}.zip`);let fallback=false;if(!response.ok){fallback=true;response=await fetch(`${encodeURIComponent(ch)}.zip`)}if(!response.ok)throw Error('Bölüm dosyası bulunamadı');if(fallback){if(status)status.textContent=`${languages[lang]} paketi hazırlanıyor · şu an İngilizce sayfa gösteriliyor`;const lbl=document.getElementById('readerLangLabel');if(lbl)lbl.textContent=`Bölüm ${ch} · İngilizce · ${languages[lang]} hazırlanıyor`;}else{const lbl=document.getElementById('readerLangLabel');if(lbl)lbl.textContent=`Bölüm ${ch} · ${languages[lang]}`;}
    bytes=new Uint8Array(await response.arrayBuffer());chapterCache.set(cacheKey,bytes);
    while(chapterCache.size>2)chapterCache.delete(chapterCache.keys().next().value);
   }
@@ -452,7 +452,7 @@ function novelArchivePage(){
  return head('series')+'<main class="wrap portal-section-main"><div class="intro"><div><div class="eyebrow">EjderManga</div><h1>Novel</h1></div><p>Novel serilerini seç ve okumaya başla.</p></div><article class="catalog"><div class="cover-box">'+image(series.cover,'Kül ve Yıldız kapağı')+'</div><div class="catalog-body"><span class="pill">Novel</span><h3>'+escapeText(series.title)+'</h3><p>'+escapeText(series.description)+'</p><div class="meta"><span>'+escapeText(series.genre)+'</span><span>1 bölüm</span></div><a class="btn" href="#/seri/'+series.slug+'">Noveli aç →</a></div></article></main>'+footer();
 }
 
-function languageSelect(lang){return `<label>Dil <select id="mangaLanguage">${Object.entries(languages).map(([code,name])=>`<option value="${code}" ${code===lang?'selected':''}>${name}</option>`).join('')}</select></label>`}
+function languageSelect(lang){return `<label>Dil <select id="mangaLanguage">${Object.entries(languages).map(([code,name])=>`<option value="${code}" ${code===lang?'selected':''} ${!['tr','en'].includes(code)?'disabled':''}>${name}${!['tr','en'].includes(code)?' · Yakında':''}</option>`).join('')}</select></label>`}
 function mangaDetail(slug,lang='tr'){
  const item=archiveCatalog.find(x=>x.slug===slug);if(!item)return `${head()}<main class="wrap anime-empty"><h1>Seri bulunamadı</h1><a href="#/">Ana sayfa</a></main>`;
  const ready=slug==='mushoku-tensei';lang=languages[lang]?lang:'tr';let progress={};try{progress=JSON.parse(localStorage.getItem('mushoku-progress-'+lang)||'{}')}catch{}

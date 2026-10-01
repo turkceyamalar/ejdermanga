@@ -9,10 +9,14 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: tr-mit-test
+  cancel-in-progress: true
+
 jobs:
   test_chapter_1:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - name: Repoyu al
         uses: actions/checkout@v4
@@ -22,38 +26,41 @@ jobs:
       - name: Manga çeviri motorunu kur
         run: |
           sudo apt-get update
-          sudo apt-get install -y git unzip fonts-dejavu-core
+          sudo apt-get install -y git unzip zip fonts-dejavu-core
           python -m pip install --upgrade pip
           git clone --depth 1 https://github.com/zyddnys/manga-image-translator.git /tmp/manga-image-translator
           cd /tmp/manga-image-translator
           pip install -r requirements.txt
 
-      - name: Bölüm 1'i hazırla
+      - name: İlk 10 sayfayı hazırla
         run: |
-          rm -rf /tmp/ch1 /tmp/ch1-translated
-          mkdir -p /tmp/ch1
-          unzip -q 1.zip -d /tmp/ch1
+          rm -rf /tmp/ch1-all /tmp/ch1-first10 /tmp/ch1-translated /tmp/base
+          mkdir -p /tmp/ch1-all /tmp/ch1-first10 /tmp/base
+          unzip -q 1.zip -d /tmp/ch1-all
+          for n in 001 002 003 004 005 006 007 008 009 010; do
+            cp "/tmp/ch1-all/$n.webp" "/tmp/ch1-first10/$n.webp"
+          done
 
       - name: Türkçeye çevir ve aynı balonlara yerleştir
         run: |
           cat > /tmp/mit-config.toml <<'EOF'
           kernel_size = 3
-          mask_dilation_offset = 12
+          mask_dilation_offset = 18
 
           [render]
           renderer = "default"
-          alignment = "center"
+          alignment = "auto"
           disable_font_border = true
           font_size_offset = 0
           font_size_minimum = 10
-          direction = "horizontal"
+          direction = "auto"
           uppercase = false
           lowercase = false
           gimp_font = "DejaVu Sans"
           no_hyphenation = true
 
           [translator]
-          translator = "offline"
+          translator = "google"
           target_lang = "TRK"
           no_text_lang_skip = false
 
@@ -66,7 +73,7 @@ jobs:
           det_invert = false
           det_gamma_correct = false
           box_threshold = 0.65
-          unclip_ratio = 2.0
+          unclip_ratio = 2.2
 
           [colorizer]
           colorization_size = 576
@@ -86,31 +93,48 @@ jobs:
           EOF
 
           cd /tmp/manga-image-translator
-          python -m manga_translator --config-file /tmp/mit-config.toml --font-path /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf local -i /tmp/ch1 -o /tmp/ch1-translated -f webp --overwrite --ignore-errors
+          python -m manga_translator local             --config-file /tmp/mit-config.toml             -i /tmp/ch1-first10             -o /tmp/ch1-translated             -f webp             --overwrite             --ignore-errors
 
-      - name: Test ZIP'ini oluştur
+      - name: Yeni Bölüm 1 paketini oluştur
         run: |
-          mkdir -p tr-mit
+          unzip -q tr-clean/1.zip -d /tmp/base
           python - <<'PY'
-          import os, zipfile, pathlib, shutil
+          import pathlib, shutil, zipfile
           src=pathlib.Path('/tmp/ch1-translated')
-          if not src.exists():
-              raise SystemExit('Translated output folder missing')
-          files=sorted([p for p in src.rglob('*') if p.suffix.lower() in {'.webp','.png','.jpg','.jpeg'}])
-          if not files:
-              raise SystemExit('No translated images generated')
+          base=pathlib.Path('/tmp/base')
+          outs=sorted([p for p in src.rglob('*') if p.suffix.lower() in {'.webp','.png','.jpg','.jpeg'}])
+          print("Translated outputs:", [p.name for p in outs])
+          found={}
+          for p in outs:
+              stem=p.stem
+              if stem.isdigit() and 1 <= int(stem) <= 10:
+                  found[int(stem)]=p
+          if len(found) != 10:
+              raise SystemExit(f'Expected 10 translated pages, got {len(found)}: {sorted(found)}')
+          for i,p in found.items():
+              target=base/f'{i:03d}.webp'
+              if p.suffix.lower()=='.webp':
+                  shutil.copy2(p,target)
+              else:
+                  from PIL import Image
+                  Image.open(p).convert('RGB').save(target,'WEBP',quality=92,method=4)
+          pathlib.Path('tr-mit').mkdir(exist_ok=True)
           with zipfile.ZipFile('tr-mit/1.zip','w',compression=zipfile.ZIP_STORED) as z:
-              for i,p in enumerate(files,1):
-                  z.write(p,f'{i:03d}{p.suffix.lower()}')
-          print('pages',len(files))
+              for p in sorted(base.glob('*.webp')):
+                  z.write(p,p.name,compress_type=zipfile.ZIP_STORED)
+          print("Built tr-mit/1.zip")
           PY
 
-      - name: Test çıktısını repoya kaydet
+      - name: Paketi repoya kaydet
         run: |
           git config user.name "ejdermanga-bot"
           git config user.email "actions@users.noreply.github.com"
           git fetch origin main
           git reset --hard origin/main
           git add tr-mit/1.zip
-          git commit -m "Bölüm 1 manga çeviri kalite testi"
-          git push origin HEAD:main
+          git commit -m "Bölüm 1 ilk 10 sayfayı temiz Türkçe manga çevirisiyle güncelle"
+          for i in 1 2 3; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main
+          done
+          exit 1

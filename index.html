@@ -340,6 +340,19 @@ async function showChapterPage(lang,ch,page){
  const sequence=++loadSequence,img=document.getElementById('chapterImage'),status=document.getElementById('chapterStatus');
  if(!img)return;
  try{
+  // Türkçe Bölüm 1: 1 Ekim'de yüklenen güncel 001.webp–038.webp sayfalarını doğrudan kullan.
+  // Böylece eski tr-mit/1.zip önbelleği/yanlış paket yerine son düzenlenen Türkçe sayfalar açılır.
+  if(lang==='tr'&&String(ch)==='1'){
+   if(page<1||page>38)throw Error('Türkçe sayfa bulunamadı');
+   const lbl=document.getElementById('readerLangLabel');
+   if(lbl)lbl.textContent='Bölüm 1 · Türkçe';
+   const directSrc=String(page).padStart(3,'0')+'.webp?v=20261002-tr';
+   status.hidden=false;status.textContent='Türkçe sayfa yükleniyor…';
+   img.onload=()=>{if(status.isConnected)status.hidden=true};
+   img.onerror=()=>{if(status.isConnected){status.hidden=false;status.textContent='Türkçe sayfa yüklenemedi. Sayfayı yenileyebilirsin.'}};
+   img.src=directSrc;
+   return;
+  }
   const cacheKey=lang+':'+ch;let bytes=chapterCache.get(cacheKey);
   if(!bytes){
    let response=null;

@@ -64,7 +64,7 @@ html[data-theme="light"] .header-dragon img{filter:brightness(0)}
 .latest-anime-card{min-width:0;display:block}.latest-anime-card .anime-poster-art{aspect-ratio:16/10;border:1px solid var(--line);border-radius:10px}
 .latest-anime-card strong{display:block;margin:8px 4px 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.latest-anime-card>span{display:block;margin:0 4px;color:var(--muted);font-size:.78rem}
 .anime-poster-art{position:relative;overflow:hidden;background:linear-gradient(145deg,var(--surface2),#111)}
-.anime-poster-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .25s ease,transform .25s ease}
+.anime-poster-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity .18s ease,transform .25s ease;image-rendering:auto;backface-visibility:hidden}
 .anime-poster-art.loaded .anime-poster-img{opacity:1}.anime-poster-art.loaded .anime-poster-fallback{opacity:0}
 .anime-poster-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:15px;text-align:center;transition:opacity .2s}
 .anime-poster-fallback span{font:900 1.2rem/1.15 "Arial Narrow","Trebuchet MS",sans-serif;color:var(--accent2)}.anime-poster-fallback small{color:var(--muted);letter-spacing:.18em}
@@ -205,6 +205,7 @@ function anime(){
 
 /* Anime archive expansion */
 animeCatalog.splice(0, animeCatalog.length,
+ {slug:'cyberpunk-edgerunners',malId:42310,title:'Cyberpunk: Edgerunners',short:'Cyberpunk: Edgerunners',genre:'Aksiyon · Bilim Kurgu · Dram',seasons:['1. Sezon'],episodes:[10],desc:'Night City’de hayatta kalmaya çalışan David Martinez’in, edgerunner olarak yükselişini anlatan neon ve yüksek tempolu hikâye.'},
  {slug:'mushoku-tensei',malId:39535,title:'Mushoku Tensei: Jobless Reincarnation',short:'Mushoku Tensei',genre:'Fantastik · Isekai · Macera',seasons:['1. Sezon','2. Sezon'],episodes:[23,25],desc:'Rudeus Greyrat’ın büyü, macera ve ikinci bir hayat etrafında ilerleyen hikâyesi.'},
  {slug:'solo-leveling',malId:52299,title:'Solo Leveling',short:'Solo Leveling',genre:'Aksiyon · Fantastik',seasons:['1. Sezon','2. Sezon'],episodes:[12,13],desc:'En zayıf avcı olarak bilinen Sung Jinwoo’nun giderek güçlenmesini konu alan aksiyon serisi.'},
  {slug:'frieren',malId:52991,title:'Frieren: Beyond Journey’s End',short:'Frieren',genre:'Fantastik · Macera · Dram',seasons:['1. Sezon'],episodes:[28],desc:'Elf büyücü Frieren’in uzun yolculuğu ve insanlarla kurduğu bağlar.'},
@@ -231,16 +232,21 @@ animeCatalog.splice(0, animeCatalog.length,
 
 // Static posters prevent blank cards; Jikan remains a fallback.
 const animeStaticPosters={
+ 'cyberpunk-edgerunners':'https://image.tmdb.org/t/p/original/iR53IVjQbyVEztGpsU4sqLVxn8v.jpg',
  'mushoku-tensei':'https://image.librewiki.net/1/1b/%EB%AC%B4%EC%A7%81%EC%A0%84%EC%83%9D_TV%EC%95%A0%EB%8B%88%EB%A9%94%EC%9D%B4%EC%85%98_%ED%8F%AC%EC%8A%A4%ED%84%B0.jpg',
  'solo-leveling':'https://media.senscritique.com/media/000021856658/0/solo_leveling.jpg',
  'frieren':'https://livedoor.blogimg.jp/pixel_houkoku/imgs/1/b/1bb0f580.jpg',
- 'jujutsu-kaisen':'https://cdn.noitatnemucod.net/thumbnail/300x400/100/7e89aafbf045d589463f9d166f4f9f16.jpg',
- 'attack-on-titan':'https://www.niusnews.com/upload/imgs/default/2021JAN_PONYMASHARON/attackend/attackend5.jpg',
+ 'jujutsu-kaisen':'https://image.tmdb.org/t/p/original/gDS31tAwaITfXMQZWec9CiZsIkd.jpg',
+ 'attack-on-titan':'https://image.tmdb.org/t/p/original/AgaD7s1vgIf4Soi3flAKN6Bte6u.jpg',
  'one-piece':'https://images-cdn.ubuy.co.in/633ff1157e3fbc25557517c8-one-piece-poster-japanese-anime-posters.jpg',
  'naruto-shippuden':'https://static.zerochan.net/NARUTO.full.3391472.jpg',
  'chainsaw-man':'https://studio-durian.jp/works/images/work/chainsawman.jpg',
  'hunter-x-hunter':'https://i.pinimg.com/736x/e3/7a/ef/e37aefe2ce367ed171a8f3176f844b58.jpg',
  'death-note':'https://imaginaire.com/en/images/DEATH-NOTE--L-LIGHT-RYUK-43-X-31-5__0699858999842-Z.JPG',
+ 'rezero':'https://shikimori.io/uploads/poster/animes/31240/main_2x-7a33f3b75eebb3f00630c4f76089a626.webp',
+ 'blue-lock':'https://images.plex.tv/photo?scale=1&size=large-1280&url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2FsTDTy73OYmKY51EK94Mc6AxogzR.jpg',
+ 'vinland-saga':'https://images.plex.tv/photo?scale=1&size=large-1280&url=https%3A%2F%2Fimage.tmdb.org%2Ft%2Fp%2Foriginal%2F9WZwylQ4VuLXaN45bMtxnztItUa.jpg',
+ 'mob-psycho-100':'https://www.manga-news.com/public/images/dvd/mob-psycho-100-anime-poster.jpg',
  'fullmetal-alchemist-brotherhood':'https://i5.walmartimages.com/seo/Fullmetal-Alchemist-Brotherhood-Key-Art-1-Wall-Poster-22-375-x-34-Framed_54a3e82d-f875-4e6d-b0c9-f50c029693a3.1ff8d13dde7d3ea483771571c8d7f6a8.jpeg',
  'bleach-tybw':'https://contents.oricon.co.jp/upimg/news/2258000/2257998/20221122_002301_p_o_85952669.jpg',
  'steel-ball-run':'https://books.r10s.jp/fan/images/oshiraku-images/sbr_KV_f33cd2f64d.jpg',
@@ -285,23 +291,34 @@ animePoster=function(item,wide){
 };
 
 async function hydrateAnimePosters(){
- const nodes=[...document.querySelectorAll('img[data-mal-id]')];
+ const nodes=[...document.querySelectorAll('img[data-mal-id]')].filter(function(n){return !n.getAttribute('src')});
  if(!nodes.length)return;
- const cacheKey='ejdermanga-anime-posters-v2';
+ const cacheKey='ejdermanga-anime-posters-v3';
  let cache={};try{cache=JSON.parse(localStorage.getItem(cacheKey)||'{}')}catch(e){}
- const ids=[...new Set(nodes.map(n=>n.dataset.malId))];
- for(const id of ids){
-  const targets=nodes.filter(n=>n.dataset.malId===id);
-  const apply=function(url){targets.forEach(function(img){img.src=url;img.onload=function(){var box=img.closest('.anime-poster-art');if(box)box.classList.add('loaded')}})};
-  if(cache[id]){apply(cache[id]);continue}
-  try{
-   const response=await fetch('https://api.jikan.moe/v4/anime/'+id);
-   if(!response.ok)continue;
-   const json=await response.json();
-   const url=(json.data&&json.data.images&&json.data.images.webp&&json.data.images.webp.large_image_url)||(json.data&&json.data.images&&json.data.images.jpg&&json.data.images.jpg.large_image_url);
-   if(url){cache[id]=url;try{localStorage.setItem(cacheKey,JSON.stringify(cache))}catch(e){}apply(url)}
-   await new Promise(function(resolve){setTimeout(resolve,340)});
-  }catch(e){}
+ const ids=[...new Set(nodes.map(function(n){return n.dataset.malId}))];
+ const apply=function(id,url){
+  nodes.filter(function(n){return n.dataset.malId===id}).forEach(function(img){
+   img.src=url;
+   img.onload=function(){var box=img.closest('.anime-poster-art');if(box)box.classList.add('loaded')};
+  });
+ };
+ const pending=[];
+ ids.forEach(function(id){
+  if(cache[id]){apply(id,cache[id])}else pending.push(id);
+ });
+ for(let i=0;i<pending.length;i+=3){
+  const batch=pending.slice(i,i+3);
+  await Promise.all(batch.map(async function(id){
+   try{
+    const response=await fetch('https://api.jikan.moe/v4/anime/'+id,{cache:'force-cache'});
+    if(!response.ok)return;
+    const json=await response.json();
+    const url=(json.data&&json.data.images&&json.data.images.webp&&json.data.images.webp.large_image_url)||(json.data&&json.data.images&&json.data.images.jpg&&json.data.images.jpg.large_image_url);
+    if(url){cache[id]=url;apply(id,url)}
+   }catch(e){}
+  }));
+  try{localStorage.setItem(cacheKey,JSON.stringify(cache))}catch(e){}
+  if(i+3<pending.length)await new Promise(function(resolve){setTimeout(resolve,120)});
  }
 }
 

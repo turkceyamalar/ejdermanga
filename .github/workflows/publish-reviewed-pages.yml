@@ -1,0 +1,56 @@
+name: Publish reviewed manga pages
+on:
+  push:
+    paths:
+      - 'reviewed-pages/**/READY'
+permissions:
+  contents: write
+concurrency:
+  group: reviewed-manga-pages
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install Pillow
+      - name: Replace reviewed pages and validate archive
+        run: |
+          python - <<'PY'
+          import base64, hashlib, io, json, pathlib, zipfile
+          from PIL import Image
+          root=pathlib.Path('reviewed-pages')
+          for folder in sorted(root.iterdir()):
+              if not (folder/'READY').is_file(): continue
+              meta=json.loads((folder/'metadata.json').read_text())
+              chapter=meta['chapter']; page=meta['page']
+              assert chapter.replace('.', '').isdigit() and 1 <= page <= 999
+              raw=base64.b64decode(''.join(p.read_text() for p in sorted(folder.glob('part-*.txt'))),validate=True)
+              assert hashlib.sha256(raw).hexdigest()==meta['sha256']
+              im=Image.open(io.BytesIO(raw)).convert('RGB')
+              buf=io.BytesIO(); im.save(buf,'WEBP',quality=95,method=6)
+              target=pathlib.Path('tr')/(chapter+'.zip')
+              with zipfile.ZipFile(target) as z: entries={n:z.read(n) for n in z.namelist()}
+              name=f'{page:03d}.webp'; assert name in entries
+              entries[name]=buf.getvalue()
+              out=io.BytesIO()
+              with zipfile.ZipFile(out,'w',compression=zipfile.ZIP_STORED) as z:
+                  for n,data in entries.items(): z.writestr(n,data)
+              target.write_bytes(out.getvalue())
+              with zipfile.ZipFile(target) as z:
+                  assert z.testzip() is None
+                  assert len(z.namelist())==len(entries)
+                  assert all(z.getinfo(n).compress_type==zipfile.ZIP_STORED for n in z.namelist())
+          PY
+      - name: Publish reviewed pages
+        run: |
+          git config user.name "ejdermanga-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add tr/
+          git diff --cached --quiet && exit 0
+          git commit -m "Publish reviewed Turkish manga pages"
+          git pull --rebase origin main
+          git push origin HEAD:main
